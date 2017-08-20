@@ -21,9 +21,13 @@ public:
    */
     virtual antlrcpp::Any visitStart(MyScriptParser::StartContext *context) = 0;
 
+    virtual antlrcpp::Any visitExprs(MyScriptParser::ExprsContext *context) = 0;
+
     virtual antlrcpp::Any visitExpr(MyScriptParser::ExprContext *context) = 0;
 
-    virtual antlrcpp::Any visitValue(MyScriptParser::ValueContext *context) = 0;
+    virtual antlrcpp::Any visitList(MyScriptParser::ListContext *context) = 0;
+
+    virtual antlrcpp::Any visitAtom(MyScriptParser::AtomContext *context) = 0;
 
 
 };

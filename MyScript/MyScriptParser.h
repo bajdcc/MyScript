@@ -12,12 +12,11 @@
 class  MyScriptParser : public antlr4::Parser {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, WS = 7, 
-    ID = 8, INT = 9
+    T__0 = 1, T__1 = 2, WS = 3, ID = 4, NUM = 5
   };
 
   enum {
-    RuleStart = 0, RuleExpr = 1, RuleValue = 2
+    RuleStart = 0, RuleExprs = 1, RuleExpr = 2, RuleList = 3, RuleAtom = 4
   };
 
   MyScriptParser(antlr4::TokenStream *input);
@@ -31,14 +30,16 @@ public:
 
 
   class StartContext;
+  class ExprsContext;
   class ExprContext;
-  class ValueContext; 
+  class ListContext;
+  class AtomContext; 
 
   class  StartContext : public antlr4::ParserRuleContext {
   public:
     StartContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    ExprContext *expr();
+    ExprsContext *exprs();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -49,12 +50,10 @@ public:
 
   StartContext* start();
 
-  class  ExprContext : public antlr4::ParserRuleContext {
+  class  ExprsContext : public antlr4::ParserRuleContext {
   public:
-    antlr4::Token *op = nullptr;;
-    ExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    ExprsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    ValueContext *value();
     std::vector<ExprContext *> expr();
     ExprContext* expr(size_t i);
 
@@ -65,13 +64,14 @@ public:
    
   };
 
-  ExprContext* expr();
-  ExprContext* expr(int precedence);
-  class  ValueContext : public antlr4::ParserRuleContext {
+  ExprsContext* exprs();
+
+  class  ExprContext : public antlr4::ParserRuleContext {
   public:
-    ValueContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    ExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *INT();
+    AtomContext *atom();
+    ListContext *list();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -80,11 +80,39 @@ public:
    
   };
 
-  ValueContext* value();
+  ExprContext* expr();
 
+  class  ListContext : public antlr4::ParserRuleContext {
+  public:
+    ListContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    ExprsContext *exprs();
 
-  virtual bool sempred(antlr4::RuleContext *_localctx, size_t ruleIndex, size_t predicateIndex) override;
-  bool exprSempred(ExprContext *_localctx, size_t predicateIndex);
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  ListContext* list();
+
+  class  AtomContext : public antlr4::ParserRuleContext {
+  public:
+    AtomContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *NUM();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  AtomContext* atom();
+
 
 private:
   static std::vector<antlr4::dfa::DFA> _decisionToDFA;

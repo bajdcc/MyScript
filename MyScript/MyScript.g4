@@ -1,16 +1,22 @@
 grammar MyScript;
 
-start : expr;
+start : '(' ')'
+      | '(' exprs ')';
 
-expr : expr op=('*'|'/') expr
-     | expr op=('+'|'-') expr
-     | value
-     | '(' expr ')'
-;
+exprs : expr+;
 
-value : INT;
+expr : atom
+     | list
+     ;
+
+list : '(' ')'
+     | '(' exprs ')'
+     ;
+atom : ID
+     | NUM
+	 ;
 
 WS : [ \t\r\n]+ -> skip ; 
 
-ID : [a-zA-Z]+ ;
-INT : [0-9]+ ;
+ID : [a-zA-Z_!\-~%^&*?+/<>]+ ;
+NUM : [0-9]+ ;

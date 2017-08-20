@@ -19,11 +19,19 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitExprs(MyScriptParser::ExprsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitExpr(MyScriptParser::ExprContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitValue(MyScriptParser::ValueContext *ctx) override {
+  virtual antlrcpp::Any visitList(MyScriptParser::ListContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAtom(MyScriptParser::AtomContext *ctx) override {
     return visitChildren(ctx);
   }
 

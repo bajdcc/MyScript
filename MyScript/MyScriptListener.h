@@ -17,11 +17,17 @@ public:
   virtual void enterStart(MyScriptParser::StartContext *ctx) = 0;
   virtual void exitStart(MyScriptParser::StartContext *ctx) = 0;
 
+  virtual void enterExprs(MyScriptParser::ExprsContext *ctx) = 0;
+  virtual void exitExprs(MyScriptParser::ExprsContext *ctx) = 0;
+
   virtual void enterExpr(MyScriptParser::ExprContext *ctx) = 0;
   virtual void exitExpr(MyScriptParser::ExprContext *ctx) = 0;
 
-  virtual void enterValue(MyScriptParser::ValueContext *ctx) = 0;
-  virtual void exitValue(MyScriptParser::ValueContext *ctx) = 0;
+  virtual void enterList(MyScriptParser::ListContext *ctx) = 0;
+  virtual void exitList(MyScriptParser::ListContext *ctx) = 0;
+
+  virtual void enterAtom(MyScriptParser::AtomContext *ctx) = 0;
+  virtual void exitAtom(MyScriptParser::AtomContext *ctx) = 0;
 
 
 };

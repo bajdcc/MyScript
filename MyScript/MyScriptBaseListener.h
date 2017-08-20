@@ -19,11 +19,17 @@ public:
   virtual void enterStart(MyScriptParser::StartContext * /*ctx*/) override { }
   virtual void exitStart(MyScriptParser::StartContext * /*ctx*/) override { }
 
+  virtual void enterExprs(MyScriptParser::ExprsContext * /*ctx*/) override { }
+  virtual void exitExprs(MyScriptParser::ExprsContext * /*ctx*/) override { }
+
   virtual void enterExpr(MyScriptParser::ExprContext * /*ctx*/) override { }
   virtual void exitExpr(MyScriptParser::ExprContext * /*ctx*/) override { }
 
-  virtual void enterValue(MyScriptParser::ValueContext * /*ctx*/) override { }
-  virtual void exitValue(MyScriptParser::ValueContext * /*ctx*/) override { }
+  virtual void enterList(MyScriptParser::ListContext * /*ctx*/) override { }
+  virtual void exitList(MyScriptParser::ListContext * /*ctx*/) override { }
+
+  virtual void enterAtom(MyScriptParser::AtomContext * /*ctx*/) override { }
+  virtual void exitAtom(MyScriptParser::AtomContext * /*ctx*/) override { }
 
 
   virtual void enterEveryRule(antlr4::ParserRuleContext * /*ctx*/) override { }
