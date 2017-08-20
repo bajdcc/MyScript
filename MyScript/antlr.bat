@@ -1,0 +1,1 @@
+java -jar antlr-4.7-complete.jar -Dlanguage=Cpp -visitor %~f1
