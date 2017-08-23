@@ -39,6 +39,15 @@
     <ClInclude Include="MyScriptListenerImpl.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="clib_memory.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="clib_type.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CLisp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyScript.cpp">
@@ -66,6 +75,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MyScriptListenerImpl.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CLisp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

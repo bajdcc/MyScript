@@ -27,6 +27,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitQuote(MyScriptParser::QuoteContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitList(MyScriptParser::ListContext *ctx) override {
     return visitChildren(ctx);
   }

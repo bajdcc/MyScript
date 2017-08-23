@@ -23,6 +23,9 @@ public:
   virtual void enterExpr(MyScriptParser::ExprContext *ctx) = 0;
   virtual void exitExpr(MyScriptParser::ExprContext *ctx) = 0;
 
+  virtual void enterQuote(MyScriptParser::QuoteContext *ctx) = 0;
+  virtual void exitQuote(MyScriptParser::QuoteContext *ctx) = 0;
+
   virtual void enterList(MyScriptParser::ListContext *ctx) = 0;
   virtual void exitList(MyScriptParser::ListContext *ctx) = 0;
 

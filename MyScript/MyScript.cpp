@@ -1,21 +1,49 @@
-// MyScript.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+ï»¿// MyScript.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include <iostream>
+#include "CLisp.h"
 
-#include "antlr4-runtime.h"
-#include "MyScriptLexer.h"
-#include "MyScriptParser.h"
-#include "MyScriptListenerImpl.h"
-#include "MyScriptVisitorImpl.h"
-
-using namespace antlr4;
-using namespace antlr4::tree;
-using namespace antlrcpp;
 using namespace std;
+
+auto lib = R"(
+(print "Init... ")
+(define nil ())
+(define quote     (flambda (form) (car form)))
+(define list      (lambda args args))
+(define caar      (lambda (x) (car (car x))))
+(define cadr      (lambda (x) (car (cdr x))))
+(define cadr      (lambda (x) (car (cdr x))))
+(define cdar      (lambda (x) (cdr (car x))))
+(define cddr      (lambda (x) (cdr (cdr x))))
+(define cadar     (lambda (x) (car (cdr (car x)))))
+(define caddar    (lambda (x) (car (cdr (cdr (car x))))))
+(define global-environment
+  (let ((globals ((flambda (args env) env))))
+    (lambda () globals)))
+(define double (lambda (x) (+ x x)))
+(define make-counter (lambda (n) (lambda () (setq n (+ n 1)))))
+(setq *syntax-table*
+  (cons (cons 'for
+    (flambda (form)
+      (list 'let (list (list (caar form) (cadar form)))
+        (list 'while (list '< (caar form) (caddar form))
+          (cadr form)
+          (list 'setq (caar form) (list '+ 1 (caar form)))))))
+  *syntax-table*))
+(define test (lambda ()
+  (let ()
+    (println "Hello world!")
+    (println "Refer: http://piumarta.com/software/lysp/lysp-1.1/lysp.c")
+    (println "Using: ANTLR 4.7")
+    (println "Author: bajdcc"))))
+(println "Done")
+)";
 
 int main()
 {
+    CLisp lisp;
+    auto value = lisp.run(lib);
     for (;;)
     {
         cout << ">> ";
@@ -23,17 +51,9 @@ int main()
         getline(cin, in);
         if (in.empty())
             break;
-        ANTLRInputStream input(in);
-        MyScriptLexer lexer(&input);
-        CommonTokenStream tokens(&lexer);
-        MyScriptParser parser(&tokens);
-        ParseTree *tree = parser.start();
-        cout << tree->toStringTree(&parser) << endl;
-        MyScriptListenerImpl listener;
-        ParseTreeWalker::DEFAULT.walk(&listener, tree);
-        MyScriptVisitorImpl visitor;
-        auto ast = visitor.visit(tree);
-        cout << endl;
+        value = lisp.run(in);
+        if (value)
+            lisp.println(value, std::cout);
     }
     return 0;
 }

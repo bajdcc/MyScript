@@ -12,7 +12,8 @@
 class  MyScriptLexer : public antlr4::Lexer {
 public:
   enum {
-    T__0 = 1, T__1 = 2, WS = 3, ID = 4, NUM = 5
+    T__0 = 1, T__1 = 2, T__2 = 3, WS = 4, LINE_COMMENT = 5, COMMENT = 6, 
+    ID = 7, STRING = 8, NUM = 9
   };
 
   MyScriptLexer(antlr4::CharStream *input);

@@ -12,11 +12,13 @@
 class  MyScriptParser : public antlr4::Parser {
 public:
   enum {
-    T__0 = 1, T__1 = 2, WS = 3, ID = 4, NUM = 5
+    T__0 = 1, T__1 = 2, T__2 = 3, WS = 4, LINE_COMMENT = 5, COMMENT = 6, 
+    ID = 7, STRING = 8, NUM = 9
   };
 
   enum {
-    RuleStart = 0, RuleExprs = 1, RuleExpr = 2, RuleList = 3, RuleAtom = 4
+    RuleStart = 0, RuleExprs = 1, RuleExpr = 2, RuleQuote = 3, RuleList = 4, 
+    RuleAtom = 5
   };
 
   MyScriptParser(antlr4::TokenStream *input);
@@ -32,6 +34,7 @@ public:
   class StartContext;
   class ExprsContext;
   class ExprContext;
+  class QuoteContext;
   class ListContext;
   class AtomContext; 
 
@@ -72,6 +75,7 @@ public:
     virtual size_t getRuleIndex() const override;
     AtomContext *atom();
     ListContext *list();
+    QuoteContext *quote();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -81,6 +85,22 @@ public:
   };
 
   ExprContext* expr();
+
+  class  QuoteContext : public antlr4::ParserRuleContext {
+  public:
+    QuoteContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    AtomContext *atom();
+    ListContext *list();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  QuoteContext* quote();
 
   class  ListContext : public antlr4::ParserRuleContext {
   public:
@@ -103,6 +123,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *NUM();
+    antlr4::tree::TerminalNode *STRING();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

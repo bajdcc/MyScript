@@ -145,6 +145,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="clib_memory.h" />
+    <ClInclude Include="clib_type.h" />
+    <ClInclude Include="CLisp.h" />
     <ClInclude Include="MyScriptBaseListener.h" />
     <ClInclude Include="MyScriptBaseVisitor.h" />
     <ClInclude Include="MyScriptLexer.h" />
@@ -155,6 +158,7 @@
     <ClInclude Include="MyScriptVisitorImpl.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CLisp.cpp" />
     <ClCompile Include="MyScript.cpp" />
     <ClCompile Include="MyScriptBaseListener.cpp" />
     <ClCompile Include="MyScriptBaseVisitor.cpp" />

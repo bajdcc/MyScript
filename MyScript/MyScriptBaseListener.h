@@ -25,6 +25,9 @@ public:
   virtual void enterExpr(MyScriptParser::ExprContext * /*ctx*/) override { }
   virtual void exitExpr(MyScriptParser::ExprContext * /*ctx*/) override { }
 
+  virtual void enterQuote(MyScriptParser::QuoteContext * /*ctx*/) override { }
+  virtual void exitQuote(MyScriptParser::QuoteContext * /*ctx*/) override { }
+
   virtual void enterList(MyScriptParser::ListContext * /*ctx*/) override { }
   virtual void exitList(MyScriptParser::ListContext * /*ctx*/) override { }
 
