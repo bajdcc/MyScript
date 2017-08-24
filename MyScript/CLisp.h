@@ -24,6 +24,7 @@ public:
         Fexpr
     } Tag;
 
+    // 由于需要GC，那么所有的对象就表为Cell同一结构
     struct Cell
     {
         Tag tag;

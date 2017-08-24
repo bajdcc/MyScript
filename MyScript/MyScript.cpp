@@ -11,6 +11,7 @@ auto lib = R"(
 (define nil ())
 (define quote     (flambda (form) (car form)))
 (define list      (lambda args args))
+(define dolist    (lambda args (let () args)))
 (define caar      (lambda (x) (car (car x))))
 (define cadr      (lambda (x) (car (cdr x))))
 (define cadr      (lambda (x) (car (cdr x))))
@@ -27,23 +28,33 @@ auto lib = R"(
   (cons (cons 'for
     (flambda (form)
       (list 'let (list (list (caar form) (cadar form)))
-        (list 'while (list '< (caar form) (caddar form))
+        (list 'while (list '<= (caar form) (caddar form))
           (cadr form)
           (list 'setq (caar form) (list '+ 1 (caar form)))))))
   *syntax-table*))
+(println "Done")
+)";
+auto test = R"(
+(define print-line (lambda (a b n)
+  (for (i 1 (- n 1)) (let () (print a) (print b)))
+  (println a)
+))
 (define test (lambda ()
-  (let ()
+  (dolist
+    (print-line "-" " " 20)
     (println "Hello world!")
     (println "Refer: http://piumarta.com/software/lysp/lysp-1.1/lysp.c")
     (println "Using: ANTLR 4.7")
-    (println "Author: bajdcc"))))
-(println "Done")
+    (println "Author: bajdcc")
+    (print-line "-" " " 20)
+    )))
 )";
 
 int main()
 {
     CLisp lisp;
     auto value = lisp.run(lib);
+    value = lisp.run(test);
     for (;;)
     {
         cout << ">> ";
@@ -52,8 +63,8 @@ int main()
         if (in.empty())
             break;
         value = lisp.run(in);
-        if (value)
-            lisp.println(value, std::cout);
+        //if (value)
+        //    lisp.println(value, std::cout);
     }
     return 0;
 }

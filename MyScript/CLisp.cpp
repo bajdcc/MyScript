@@ -20,6 +20,7 @@ CLisp::~CLisp()
 
 void CLisp::init()
 {
+    // 常量
     _S_t = intern("t");
     _S_quote = intern("quote");
     _S_qquote = intern("quasiquote");
@@ -320,6 +321,9 @@ CLisp::Cell* CLisp::cadar(Cell* self)
 
 CLisp::Cell* CLisp::intern(const char* s)
 {
+    // interns链表的结构
+    // interns = cons (cell interns)
+    // 查找：car(node)=cell cdr(node)=next
     Cell* cell = nullptr;
     for (cell = interns; cell; cell = cdr(cell))
         if (!strcmp(symbol(car(cell)), s))
@@ -398,6 +402,7 @@ CLisp::Cell* CLisp::evlist(Cell* expr, Cell* env)
     return result;
 }
 
+// 执行过程，这里比较关键
 CLisp::Cell* CLisp::apply(Cell* fn, Cell* args, Cell* env)
 {
     mark(fn);
@@ -408,11 +413,11 @@ CLisp::Cell* CLisp::apply(Cell* fn, Cell* args, Cell* env)
     {
         switch (fn->tag)
         {
-        case Subr: return (this->*subr(fn))(evargs(args, env), env);
-        case Fsubr: return (this->*fsubr(fn))(args, env);
+        case Subr: return (this->*subr(fn))(evargs(args, env), env); // 执行普通过程（计算参数）
+        case Fsubr: return (this->*fsubr(fn))(args, env); // 不计算参数，原样，用于meta-programming
         case Expr:
         {
-            Cell* eva = evargs(args, env);
+            Cell* eva = evargs(args, env); // 计算参数
             if (eva)
                 mark(eva);
             eva = evlist(cdr(expr(fn)), evbind(car(expr(fn)), eva, exprenv(fn)));
@@ -421,7 +426,7 @@ CLisp::Cell* CLisp::apply(Cell* fn, Cell* args, Cell* env)
         }
         case Fexpr:
         {
-            Cell* eva = cell_cons(env, nullptr);
+            Cell* eva = cell_cons(env, nullptr); // 不计算参数
             if (eva)
                 mark(eva);
             eva = cell_cons(args, eva);
@@ -435,6 +440,9 @@ CLisp::Cell* CLisp::apply(Cell* fn, Cell* args, Cell* env)
     return args;
 }
 
+// 表达式计算
+// 对于常量或是过程来说，不计算
+// 只计算嵌套结构cons和变量symbol
 CLisp::Cell* CLisp::eval(Cell* expr, Cell* env)
 {
     if (!expr) return nullptr;
@@ -446,19 +454,19 @@ CLisp::Cell* CLisp::eval(Cell* expr, Cell* env)
         }
     case Symbol:
         {
-            Cell* cell = assq(expr, env);
+            Cell* cell = assq(expr, env); // 去当前环境中找相应值
             if (!cell) return undefined(expr);
             return cdr(cell);
         }
     case Cons:
         {
-            Cell* cell;
+            Cell* cell; // 对于cons结构/链表的递归调用
             mark(expr);
             mark(env);
-            cell = eval(car(expr), env);
+            cell = eval(car(expr), env); // 计算表中第一元素car(exp)
             if (!cell) return nullptr;
             mark(cell);
-            cell = apply(cell, cdr(expr), env);
+            cell = apply(cell, cdr(expr), env); // 执行第一元素相应过程，参数是cdr(exp)
             unmark(expr);
             return cell;
         }
@@ -833,10 +841,14 @@ CLisp::Cell* CLisp::print(Cell* self, std::ostream& stream)
             stream << "fsubr<" << self->number << ">";
             break;
         case Expr: 
-            stream << "(lambda " << print(expr(self), stream) << ")";
+            stream << "(lambda ";
+            print(expr(self), stream);
+            stream << ")";
             break;
         case Fexpr: 
-            stream << "(flambda " << print(fexpr(self), stream) << ")";
+            stream << "(flambda ";
+            print(fexpr(self), stream);
+            stream << ")";
             break;
         case Cons:
         {
@@ -874,6 +886,7 @@ antlrcpp::Any CLisp::visitStart(MyScriptParser::StartContext* ctx)
     return visitChildren(ctx);
 }
 
+// 同下面的列表解析
 antlrcpp::Any CLisp::visitExprs(MyScriptParser::ExprsContext* ctx)
 {
     Cell *head, *tail;
@@ -916,24 +929,31 @@ antlrcpp::Any CLisp::visitQuote(MyScriptParser::QuoteContext* ctx)
     return cell;
 }
 
+// 列表解析
 antlrcpp::Any CLisp::visitList(MyScriptParser::ListContext* ctx)
 {
     Cell *head, *tail;
+    // tail=head=()
     tail = head = cell_cons(nullptr, nullptr);
     mark(head);
     auto node = ctx->exprs();
     if (node)
         for (auto expr : node->expr())
         {
-            Cell *cell = visit(expr);
+            Cell *cell = visit(expr); // list (... cell ...)
             if (cell)
                 mark(cell);
+            // 链表增加结点 cdr(tail)=cons(new_node,nil), tail=new_node
             tail = rplacd(tail, cell_cons(cell, nullptr));
         }
-    head = cdr(head);
+    head = cdr(head);// head=first node
     if (head && symbolP(car(head))) {
-        Cell *syntax = assq(car(head), cdr(syntaxTable));
-        if (syntax) head = apply(cdr(syntax), cdr(head), globals);
+        Cell *syntax = assq(car(head), cdr(syntaxTable)); // 是否setq syntaxTable
+        if (syntax) head = apply(cdr(syntax), cdr(head), globals); // 立马执行
+        // 这里有个问题：
+        // setq:for要等代码解析完并执行才能注册到syntaxTable中
+        // 那么下面的代码中要用到for会提示未注册
+        // 估计要分段执行
         if (!head) {
             unmark(head);
             return nullptr;
@@ -943,14 +963,20 @@ antlrcpp::Any CLisp::visitList(MyScriptParser::ListContext* ctx)
     return head ? head : nullptr;
 }
 
+// 终结符解析
 antlrcpp::Any CLisp::visitAtom(MyScriptParser::AtomContext* ctx)
 {
+    // 1. 如果是ID，就调用intern，返回个symbol的cell
+    //    intern的作用：在interns链表中找ID，找到就返回
+    //    找不到就新建一个
     auto node = ctx->ID();
     if (node)
         return intern(node->getText().c_str());
+    // 2. 如果是数字，就创建个数字的cell
     node = ctx->NUM();
     if (node)
         return cell_num(atoi(node->getText().c_str()));
+    // 3. 如果是string，就创建个string的cell
     node = ctx->STRING();
     if (node)
     {
